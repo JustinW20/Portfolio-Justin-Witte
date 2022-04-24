@@ -76,13 +76,15 @@
                         public void ReadTimeCsv()
                         {
                             var csvTable1 = new DataTable();
-                            using (var csvReader1 = new CsvReader(new StreamReader(File.OpenRead(@".\Content\ExcelFiles\Highscore.csv")), false))
+                            using (var csvReader1 = new CsvReader(new StreamReader(
+                                File.OpenRead(@".\Content\ExcelFiles\Highscore.csv")), false))
                             {
                                 //loading the csv file
                                 csvTable1.Load(csvReader1);
                             }
                             //reading the csv file and turning the vars into int
-                            searchTime.Add(item: new SearchTime { minuteTime = Convert.ToInt16(csvTable1.Rows[0][0]), secondTime = Convert.ToInt16(csvTable1.Rows[0][1]) });
+                            searchTime.Add(item: new SearchTime { minuteTime = Convert.ToInt16(
+                                csvTable1.Rows[0][0]), secondTime = Convert.ToInt16(csvTable1.Rows[0][1]) });
                         }          
                     </code>
                 </pre>
@@ -92,17 +94,20 @@
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        public void CheckRecordBeaten(int recordMinute, int recordSecond, int currentMinute, int currentSecond)
+                        public void CheckRecordBeaten(int recordMinute, int recordSecond,
+                         int currentMinute, int currentSecond)
                         {
                             if (currentMinute < recordMinute)
                             {
-                                TimeCsvWriter.AddRecord(currentMinute, currentSecond, @".\Content\ExcelFiles\Highscore.csv");
+                                TimeCsvWriter.AddRecord(currentMinute, currentSecond, 
+                                @".\Content\ExcelFiles\Highscore.csv");
                             }
                             else if (currentMinute == recordMinute)
                             {
                                 if (currentSecond < recordSecond)
                                 {
-                                    TimeCsvWriter.AddRecord(currentMinute, currentSecond, @".\Content\ExcelFiles\Highscore.csv");
+                                    TimeCsvWriter.AddRecord(currentMinute, currentSecond, 
+                                    @".\Content\ExcelFiles\Highscore.csv");
                                 }
                             }
                         }                
@@ -129,10 +134,12 @@
                             private void CalculateAerialSpeed()
                             {
                                 //Calculate the velocity
-                                Vector2 previousPositionPlayer = new Vector2((float)player.previousX, (float)player.previousY);
+                                Vector2 previousPositionPlayer = new Vector2(
+                                    (float)player.previousX, (float)player.previousY);
                                 Vector2 currentVelocity = player.position - previousPositionPlayer;
 
-                                Vector2 previousPositionHand = new Vector2((float)lasthand.previousX, (float)lasthand.previousY);
+                                Vector2 previousPositionHand = new Vector2(
+                                    (float)lasthand.previousX, (float)lasthand.previousY);
                                 Vector2 currentVelocityHand = lasthand.position - previousPositionHand;
 
 
@@ -147,7 +154,8 @@
                                     PlayingState.physics.linearVelocity1 *= -1;
                                 }
                                 //Calculate velocity and adding scalar to lower the innitial gained speed
-                                Vector2 calculateVelocity = ((currentVelocity * (float)PlayingState.physics.linearVelocity0) + (currentVelocityHand * (float)PlayingState.physics.linearVelocity1)) * 0.70f;
+                                Vector2 calculateVelocity = ((currentVelocity * (float)PlayingState.physics.linearVelocity0)
+                                 + (currentVelocityHand * (float)PlayingState.physics.linearVelocity1)) * 0.70f;
                                 const int MAXSPEED = 800;
                                 //Checks if the velocity is higher then the max speed and if so sets it back to the max speed
                                 if (calculateVelocity.Length() > MAXSPEED)
