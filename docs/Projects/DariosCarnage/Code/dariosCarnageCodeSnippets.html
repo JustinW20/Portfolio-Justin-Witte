@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<!--
+	Directive by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Portfolio | Justin Witte</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../../../assets/css/main.css" />
+</head>
+
+<body class="is-preload">
+    <header>
+        <!-- <div class="topnav">
+                <p>Justin Witte
+                    <a href="index.html">Home</a>
+                    <a class="active" href="aboutme.html">About me</a></p>
+                </div> -->
+        <header class="major container medium">
+            <h2>Dario's Carnage code snippets</h2>
+        </header>
+    </header>
+
+    <div id="main">
+        <div class="box container">
+            <section>
+                <header>
+                    <h3>Gun scripts</h3>
+                </header>
+                <p>
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="box container">
+            <section>
+                <header>
+                    <h3>Settings menu</h3>
+                </header>
+                <p>
+                    I made a settings menu for this game, so the player could change the sensitivity and the volume of
+                    the sounds. To save these settings, I use the PlayerPrefs from Unity. But I needed to make sure that
+                    the player could easily modify these settings. So I used sliders, which the player could modify and
+                    then send the value back to the script to save that in the Playerprefs. These sliders would trigger
+                    this function for sound, with another function like this for the sensitivity respectively:
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            public void ChangeSound(float volume)
+                            {
+                                ChangeText(soundText, volume);
+                                PlayerPrefs.SetFloat("SoundVolume", volume);
+                                GameEvents.onVolumeChange?.Invoke();
+                            }             
+                        </code>
+                    </pre>
+                <br />
+                These functions change the on screen text next to the sliders, so the player can see what value it is
+                currently on, then it saves the value and lastly invokes an action so the in-game volume is actually
+                changed at the right moment.
+                <br />
+                At the start of the game, the game needs to check what the value of these floats in PlayerPrefs is. If
+                they do not exist, they should set it to a default value (50 in this case). I do this with the following
+                function:
+                <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            public void CheckValueExists(string floatName, Slider slider, Text text)
+                            {
+                                float a;
+                                if((a = PlayerPrefs.GetFloat(floatName)) != 0)
+                                {
+                                    ChangeSlider(slider, a);
+                                    ChangeText(text, a);
+                                }
+                                else
+                                {
+                                    ChangeSlider(slider, 50);
+                                    ChangeText(text, 50);
+                                }
+                            }           
+                        </code>
+                    </pre>
+                <br />
+                Lastly, when you exit the screen it will save the PlayerPrefs and invoke an action that is used when the
+                settings menu is closed.
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        public void ExitScreen()
+                        {
+                            PlayerPrefs.Save();
+                            GameEvents.onSettingsClose?.Invoke();
+                            canvas.enabled = false;
+                        }     
+                    </code>
+                </pre>
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+        <div class="container medium">
+
+            <header class="major last">
+                <h2>Contact me</h2>
+            </header>
+
+            <p> e-mail: jcmwitte@outlook.com
+                <!--<br />
+						Or message me directly -->
+            </p>
+
+            <!--<form method="post" action="#">
+						<div class="row">
+							<div class="col-6 col-12-mobilep">
+								<input type="text" name="name" placeholder="Name" />
+							</div>
+							<div class="col-6 col-12-mobilep">
+								<input type="email" name="email" placeholder="Email" />
+							</div>
+							<div class="col-12">
+								<textarea name="message" placeholder="Message" rows="6"></textarea>
+							</div>
+							<div class="col-12">
+								<ul class="actions special">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>-->
+
+            <ul class="icons">
+                <!--<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>-->
+                <li><a href="#" class="icon brands fa-github" name-value="github"><span class="label">Github</span> </a>
+                </li>
+                <!--<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>-->
+                <li><a href="#" class="icon brands fa-linkedin" name-value="linkedin"><span
+                            class="label">LinkedIn</span></a></li>
+            </ul>
+
+            <ul class="copyright">
+                <li>&copy; Untitled. All rights reserved.</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../../assets/js/jquery.min.js"></script>
+    <script src="../../../assets/js/browser.min.js"></script>
+    <script src="../../../assets/js/breakpoints.min.js"></script>
+    <script src="../../../assets/js/util.js"></script>
+    <script src="../../../assets/js/main.js"></script>
+</body>
+
+</html>
