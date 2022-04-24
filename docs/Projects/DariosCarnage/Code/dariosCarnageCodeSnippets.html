@@ -213,7 +213,7 @@
                                     {
                                         GameEvents.shot?.Invoke(shot, (int)bulletDamage);
                                         //add effects and damage here
-                                        Target target = shot.transform.GetComponent<Target>();
+                                        Target target = shot.transform.GetComponent[Target]();
                                         GiveDamage(target);
                                     }
                                     currentAmmo--;
