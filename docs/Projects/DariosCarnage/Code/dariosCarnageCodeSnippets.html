@@ -32,6 +32,196 @@
                     <h3>Gun scripts</h3>
                 </header>
                 <p>
+                    As <i>Dario's Carnage</i> is a first person shooter game, it has guns, weird guns at that. I decided
+                    to make the parent scripts for these guns. However, the guns are really unique and have big
+                    differences. So I needed to find a way to still make parent classes and make sure they can keep
+                    their uniqueness. For that, I used interfaces, so I could declare the functions, but not write the
+                    stuff the function will run, so it can adapt to the different guns. I used two of them, as their are
+                    projectile shooting guns and hitscan guns, together with a main abstract class. These interfaces
+                    look like this:
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            public interface IHitscan
+                            {
+                                public IEnumerator Shoot(Vector3 startPosition, Vector3 direction);
+                            }    
+                            
+                            public interface IProjectileShot<Bullet>
+                            {
+                                public void Shoot(Vector3 startPosition, Vector3 direction, Bullet bullet);
+                            }
+                        </code>
+                    </pre>
+                <br />
+                In the abstract script, it checks for when the gun has to reload and holds data for its ammo, reloadtime
+                and cooldown between shots. Next to that there are also just some functions that a gun can use for their
+                own usecases, these are some examples:
+                <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            /// <summary> Give damage to the <paramref name="target"/>.</summary>
+                            /// <param name="target"> The object you hit with the shot.</param>
+                            public void GiveDamage(Target target)
+                            {
+                                if (target != null)
+                                {
+                                    GameEvents.onHit?.Invoke(target);
+                                    target.TakeDamage(bulletDamage);
+                                }
+                            }
+
+                            /// <summary> Sets an <paramref name="action"/> that runs when the player shoots an enemy.
+                            /// <br> Only use this method within the <see href="Awake"/> or <see href="Start"/>.</br></summary>
+                            public void OnHit(Action action) => GameEvents.onHit += _ => action();
+
+                            /// <summary> Sets an <paramref name="action"/> that runs when the player shoots an enemy.
+                            /// <br> This overload requires an instance of Target as parameter.</br>
+                            /// <br> Only use this method within the <see href="Awake"/> or <see href="Start"/>.</br></summary>    
+                            public void OnHit(Action<Target> action) => GameEvents.onHit += action;
+
+                            /// <summary> Sets the current ammo to the max ammo </summary>
+                            public void SetToMaxAmmo() => currentAmmo = maxAmmo;
+
+                            /// <summary> Deducts <paramref name="deduction"/> from the current ammo. </summary>
+                            /// <returns> The current ammo minus <paramref name="deduction"/>. 
+                            /// <br> If you have less ammo than required, you only lose the ammo that is left. </br></returns>
+                            public int DeductAmmo(int deduction)
+                            {
+                                if (currentAmmo >= deduction)
+                                {
+                                    currentAmmo -= deduction;
+                                    return deduction;
+                                }
+                                else
+                                {
+                                    int localCurrentAmmo = currentAmmo;
+                                    currentAmmo = 0;
+                                    return localCurrentAmmo;
+                                }
+                            }
+                        </code>
+                    </pre>
+                <br />
+                Here is an example of a gun which uses these scripts. It is a charging pistol, which needs to charge up
+                before it can shoot, the damage is then calculated by how high the charge is. It only needs a few
+                functions for the charging and the shooting and everything else is done by the abstract script which the
+                charging pistol inherits. It also uses the IHitscan interface, so it knows what variables to use and you
+                cannot forget to use the shoot function.
+                <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            public class ChargingPistol : Gun, IHitscan
+                            {
+                                readonly float maxCharge = 20;
+                                float currentTimer = 0;
+                                int currentCharge = 0;
+                                private bool chargeDone, charging;
+                                [SerializeField] Image chargeCirle;
+                                [SerializeField] ParticleSystem chargingEffect;
+                                [SerializeField, Header("Sounds")] Sound charge;
+
+                                public override void Awake()
+                                {
+
+                                    base.Awake();
+                                }
+
+                                //Start is called before the first frame update
+                                public override void Start()
+                                {
+                                    reloadTime = 3;
+                                    maxAmmo = 15;
+                                    shootTimer = 0.1f;
+                                    bulletDamage = 0;
+                                    base.Start();
+                                    chargingEffect.gameObject.SetActive(false);
+                                }
+
+                                //not using base.Update() to be able to change the way the gun shoots
+                                //Update is called once per frame
+                                public override void Update()
+                                {
+                                    base.Update();
+                                    if (Input.GetKey(KeyCode.Mouse0) && NextShotReady())
+                                        ChargeGun(maxCharge);
+
+                                        if ((charging && Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
+                                        {
+                                            //chargingEffect.Pause();
+                                            chargingEffect.gameObject.SetActive(false);
+                                            StartCoroutine(Shoot(camera.transform.position, camera.transform.forward));
+                                            muzzleFlash.Play();
+                                            AudioManager.Sound.Stop(charge);
+                                            AudioManager.Sound.Play(shootSound);
+                                            ResetCharge();
+                                            StartCoroutine(ShootCooldown(shootTimer));
+                                        }
+                                    
+                                    UpdateUI();
+                                }
+
+                                //a function that charges the gun
+                                public void ChargeGun(float maxCharge)
+                                {
+                                    charging = true;
+                                    chargingEffect.gameObject.SetActive(true);
+                                    //chargingEffect.Play();
+                                    if (currentCharge >= maxCharge)
+                                    {
+                                        chargeDone = true;
+                                    }
+                                    if (!chargeDone)
+                                    {
+                                        AudioManager.Sound.PlayDelayed(charge, 1.2f);
+                                        //the amount of time in seconds it needs to wait between charges of the gun to make it non-frame dependent
+                                        float delayCheck = 0.05f;
+
+                                        currentTimer += Time.deltaTime;
+
+                                        if (currentTimer >= delayCheck)
+                                        {
+                                            currentTimer = 0;
+                                            currentCharge++;
+                                            bulletDamage = currentCharge * 2;
+                                            shootTimer = currentCharge / 13;
+                                        }
+                                    }
+                                }
+
+                                void ResetCharge()
+                                {
+                                    chargeDone = false;
+                                    charging = false;
+                                    currentCharge = 0;
+                                }
+
+                                public override void UpdateUI()
+                                {
+                                    base.UpdateUI();
+                                    chargeCirle.fillAmount = currentCharge * 0.05f;
+                                }
+
+                                public IEnumerator Shoot(Vector3 startPosition, Vector3 direction)
+                                {
+                                    animator.SetBool("Shooting", true);
+                                    direction.Normalize();
+                                    RaycastHit shot;
+
+                                    if (Physics.Raycast(startPosition, direction, out shot))
+                                    {
+                                        GameEvents.shot?.Invoke(shot, (int)bulletDamage);
+                                        //add effects and damage here
+                                        Target target = shot.transform.GetComponent<Target>();
+                                        GiveDamage(target);
+                                    }
+                                    currentAmmo--;
+                                    yield return new WaitForEndOfFrame();
+                                    animator.SetBool("Shooting", false);
+                                }
+                            }
+                        </code>
+                    </pre>
                 </p>
             </section>
         </div>
