@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<!--
+	Directive by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Portfolio | Justin Witte</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../../../assets/css/main.css" />
+</head>
+
+<body class="is-preload">
+    <header>
+        <!-- <div class="topnav">
+                <p>Justin Witte
+                    <a href="index.html">Home</a>
+                    <a class="active" href="aboutme.html">About me</a></p>
+                </div> -->
+        <header class="major container medium">
+            <h2>It Came Down From Space code snippets</h2>
+        </header>
+    </header>
+
+    <div id="main">
+        <div class="box container">
+            <section>
+                <header>
+                    <h3>Timer</h3>
+                </header>
+                <p>Making a timer for a game does not seem very hard. It just needs to store how long the player has
+                    been playing and show it to the player. However, in this case I also needed to save the time locally
+                    and get that time back. So first I needed to make something to save the time in. For this I used a
+                    csv file. Now I needed to be able to add data to it.
+                    <br />
+                    I did this with the following function:
+                    <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        public static void AddRecord(int minuteTime, int secondTime, string filepath)
+                        {
+                            try
+                            {
+                                using(StreamWriter file = new StreamWriter(filepath, false))
+                                {
+                                    //writes the record to the CSV file
+                                    file.WriteLine(minuteTime + "," + secondTime);
+                                }
+                            }
+                            catch(Exception ex)
+                            {
+                                //if something goes wrong, VS is here to tell me I'm bad at programming
+                                throw new ApplicationException("You're so bad at programming", ex);
+                            }
+                        }                
+                        </code>
+                    </pre>
+                <br />
+                Due to this being a static function, I could use it everywhere in the project. This function removes
+                everything in the csv file and adds the new time.
+                <br />
+                Now that I was able to store it, I needed to be able to access the data. I did this with the following
+                function and class.
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        public class SearchTime
+                        {
+                            public int minuteTime { get; set; }
+                            public int secondTime { get; set; }
+                        }
+
+                        public void ReadTimeCsv()
+                        {
+                            var csvTable1 = new DataTable();
+                            using (var csvReader1 = new CsvReader(new StreamReader(File.OpenRead(@".\Content\ExcelFiles\Highscore.csv")), false))
+                            {
+                                //loading the csv file
+                                csvTable1.Load(csvReader1);
+                            }
+                            //reading the csv file and turning the vars into int
+                            searchTime.Add(item: new SearchTime { minuteTime = Convert.ToInt16(csvTable1.Rows[0][0]), secondTime = Convert.ToInt16(csvTable1.Rows[0][1]) });
+                        }          
+                    </code>
+                </pre>
+                <br />
+                Now, I could use this data to check when to rewrite the highscore, I check this in the following
+                function:
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        public void CheckRecordBeaten(int recordMinute, int recordSecond, int currentMinute, int currentSecond)
+                        {
+                            if (currentMinute < recordMinute)
+                            {
+                                TimeCsvWriter.AddRecord(currentMinute, currentSecond, @".\Content\ExcelFiles\Highscore.csv");
+                            }
+                            else if (currentMinute == recordMinute)
+                            {
+                                if (currentSecond < recordSecond)
+                                {
+                                    TimeCsvWriter.AddRecord(currentMinute, currentSecond, @".\Content\ExcelFiles\Highscore.csv");
+                                }
+                            }
+                        }                
+                    </code>
+                </pre>
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="box container">
+            <section>
+                <header>
+                    <h3>Fly through the air</h3>
+                </header>
+                <p>
+                    This game has some really complicated physics all due to the player moving using a double pendulum.
+                    If the player lets loose of both of his hands, the player needs to fly through the air using the
+                    momentum it has created while swinging. I calculate this momentum using the following function:
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            private void CalculateAerialSpeed()
+                            {
+                                //Calculate the velocity
+                                Vector2 previousPositionPlayer = new Vector2((float)player.previousX, (float)player.previousY);
+                                Vector2 currentVelocity = player.position - previousPositionPlayer;
+
+                                Vector2 previousPositionHand = new Vector2((float)lasthand.previousX, (float)lasthand.previousY);
+                                Vector2 currentVelocityHand = lasthand.position - previousPositionHand;
+
+
+                                //Sets the linear velocity to a positive value when it is below 0
+                                //Otherwise it would only go right instead of left
+                                if ((float)PlayingState.physics.linearVelocity0 < 0)
+                                {
+                                    PlayingState.physics.linearVelocity0 *= -1;
+                                }
+                                if ((float)PlayingState.physics.linearVelocity1 < 0)
+                                {
+                                    PlayingState.physics.linearVelocity1 *= -1;
+                                }
+                                //Calculate velocity and adding scalar to lower the innitial gained speed
+                                Vector2 calculateVelocity = ((currentVelocity * (float)PlayingState.physics.linearVelocity0) + (currentVelocityHand * (float)PlayingState.physics.linearVelocity1)) * 0.70f;
+                                const int MAXSPEED = 800;
+                                //Checks if the velocity is higher then the max speed and if so sets it back to the max speed
+                                if (calculateVelocity.Length() > MAXSPEED)
+                                {
+                                    calculateVelocity.Normalize();
+                                    calculateVelocity *= MAXSPEED;
+                                }
+
+                                player.velocity = calculateVelocity;
+                            } 
+                        </code>
+                    </pre>
+                <br />
+                The first 2 Vector2s calculate the difference between the player position and its previous position.
+                After that I check the velocity of the loose hand to make sure it stays with the body.
+                <br />
+                Now using the double pendulum physics made by some of my teammates, I could calculate the velocity of
+                the body, as well as the loose hand and modify it a bit to make sure the player does not go too fast.
+                After that I truncate the speed of the player even more so it won't fly too fast.
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+        <div class="container medium">
+
+            <header class="major last">
+                <h2>Contact me</h2>
+            </header>
+
+            <p> e-mail: jcmwitte@outlook.com
+                <!--<br />
+						Or message me directly -->
+            </p>
+
+            <!--<form method="post" action="#">
+						<div class="row">
+							<div class="col-6 col-12-mobilep">
+								<input type="text" name="name" placeholder="Name" />
+							</div>
+							<div class="col-6 col-12-mobilep">
+								<input type="email" name="email" placeholder="Email" />
+							</div>
+							<div class="col-12">
+								<textarea name="message" placeholder="Message" rows="6"></textarea>
+							</div>
+							<div class="col-12">
+								<ul class="actions special">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>-->
+
+            <ul class="icons">
+                <!--<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>-->
+                <li><a href="#" class="icon brands fa-github" name-value="github"><span class="label">Github</span> </a>
+                </li>
+                <!--<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>-->
+                <li><a href="#" class="icon brands fa-linkedin" name-value="linkedin"><span
+                            class="label">LinkedIn</span></a></li>
+            </ul>
+
+            <ul class="copyright">
+                <li>&copy; Untitled. All rights reserved.</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../../assets/js/jquery.min.js"></script>
+    <script src="../../../assets/js/browser.min.js"></script>
+    <script src="../../../assets/js/breakpoints.min.js"></script>
+    <script src="../../../assets/js/util.js"></script>
+    <script src="../../../assets/js/main.js"></script>
+</body>
+
+</html>
