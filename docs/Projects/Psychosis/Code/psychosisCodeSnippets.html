@@ -29,10 +29,140 @@
         <div class="box container">
             <section>
                 <header>
-                    <h3>Textbox</h3>
+                    <h3>Textwriter</h3>
                 </header>
                 <p>
-                    
+                    For <i>Psychosis</i> I made a textwriter, which shows text as if it is scrolling (like in pokemon
+                    games or basically any other game that uses textboxes). For this, I made an inner-class. That way, I
+                    can add multiple textwriters from the same script, if I want to. This inner-class makes sure the
+                    text gradually gets shown on screen. It does this like this:
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            //returns true on completion of showing all text
+                            public bool Update()
+                            {
+                                timer -= Time.deltaTime;
+                                while (timer <= 0)
+                                {
+                                    //display next character
+                                    timer += timePerCharacter;
+                                    characterIndex++;
+                                    string text = newText.Substring(0, characterIndex);
+                                    if (invisibleCharacters)
+                                    {
+                                        text += "<color=#00000000>" + newText.Substring(characterIndex) + "</color>";
+                                    }
+                                    uiText.text = text;
+
+                                    if (characterIndex >= newText.Length)
+                                    {
+                                        //now stop displaying new characters
+                                        onComplete?.Invoke();
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        </code>
+                    </pre>
+                <br />
+                As you can see it already prints all of the text, but puts some of it invisible. It does this so that if
+                the text is centered, it still gets drawn at the right position and doesn't move every time a letter is
+                added. Also I changed the standard Update function to be a boolean, this is so it can check whether the
+                textwriter is done writing all the text, if so the textwriter gets deleted:
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                    // Update is called once per frame
+                    void Update()
+                    {
+                        for (int i = 0; i < textWriterSingleList.Count; i++)
+                        {
+                            bool isDone = textWriterSingleList[i].Update();
+                            if (isDone)
+                            {
+                                textWriterSingleList.RemoveAt(i);
+                                i--;
+                            }
+                        }
+                    }
+                    </code>
+                </pre>
+                <br />
+                I also made sure developers can add and remove these textwriters from any script. I did this by making a
+                static script, which calls a non-static script, which adds or removes a writer. These look like this:
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        public static TextWriterSingle AddWriter(Text uiText, string newText, float timePerCharacter, 
+                         Action onComplete = null, bool invisibleCharacters = true, bool removePreviousWriter = true)
+                        {
+                            if (removePreviousWriter)
+                                instance.RemoveWriter_Local(uiText);
+                            return instance.AddWriter_Local(uiText, newText, timePerCharacter, onComplete, invisibleCharacters);
+                        }
+                        private TextWriterSingle AddWriter_Local(Text uiText, string newText, float timePerCharacter,
+                         Action onComplete, bool invisibleCharacters)
+                        {
+                            TextWriterSingle textWriterSingle = new TextWriterSingle(uiText, newText, timePerCharacter,
+                             onComplete, invisibleCharacters);
+                            textWriterSingleList.Add(textWriterSingle);
+                            return textWriterSingle;
+                        }
+
+                        public static void RemoveWriter(Text uiText)
+                        {
+                            instance.RemoveWriter_Local(uiText);
+                        }
+
+                        private void RemoveWriter_Local(Text uiText)
+                        {
+                            for (int i = 0; i < textWriterSingleList.Count; i++)
+                            {
+                                if (textWriterSingleList[i].GetUIText() == uiText)
+                                {
+                                    textWriterSingleList.RemoveAt(i);
+                                    i--;
+                                }
+
+                            }
+                        }
+                    </code>
+                </pre>
+                <br />
+                Here is an example of them getting called from a different script:
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        private void Awake()
+                        {
+                            text = transform.Find("Text").GetComponent<Text>();
+                            textWriterSingle = TextWriter.AddWriter(text, messageArray[0], textSpeed);
+                        }
+
+                        void Update()
+                        {
+                            if (Input.GetKeyDown(confirmKey))
+                            {
+                                if (textWriterSingle?.IsActive() != false)
+                                {
+                                    textWriterSingle.SkipText();
+                                }
+                                else if (++i >= messageArray.Length)
+                                {
+                                    Destroy(gameObject);
+                                }
+                                else
+                                {
+                                    string message = messageArray[i];
+                                    StartTalking();
+                                    textWriterSingle = TextWriter.AddWriter(text, message, textSpeed, StopTalking);
+                                }
+                            }
+                        }
+                    </code>
+                </pre>
                 </p>
             </section>
         </div>
