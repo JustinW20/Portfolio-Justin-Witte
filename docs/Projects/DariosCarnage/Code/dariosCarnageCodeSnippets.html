@@ -60,8 +60,8 @@
                 <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            /// <summary> Give damage to the <paramref name="target"/>.</summary>
-                            /// <param name="target"> The object you hit with the shot.</param>
+                            /// Give damage to the <i>target</i>.
+                            /// <i>target</i> The object you hit with the shot.
                             public void GiveDamage(Target target)
                             {
                                 if (target != null)
@@ -71,21 +71,21 @@
                                 }
                             }
 
-                            /// <summary> Sets an <paramref name="action"/> that runs when the player shoots an enemy.
-                            /// <br> Only use this method within the <see href="Awake"/> or <see href="Start"/>.</br></summary>
+                            /// Sets an <i>action</i> that runs when the player shoots an enemy.
+                            /// Only use this method within the <i>Awake</i> or <i>Start</i>.
                             public void OnHit(Action action) => GameEvents.onHit += _ => action();
 
-                            /// <summary> Sets an <paramref name="action"/> that runs when the player shoots an enemy.
-                            /// <br> This overload requires an instance of Target as parameter.</br>
-                            /// <br> Only use this method within the <see href="Awake"/> or <see href="Start"/>.</br></summary>    
-                            public void OnHit(Action<Target> action) => GameEvents.onHit += action;
+                            /// Sets an <i>action</i> that runs when the player shoots an enemy.
+                            /// This overload requires an instance of Target as parameter.</br>
+                            /// Only use this method within the <i>Awake</i> or <i>Start</i>.    
+                            public void OnHit(Action[Target] action) => GameEvents.onHit += action;
 
-                            /// <summary> Sets the current ammo to the max ammo </summary>
+                            ///Sets the current ammo to the max ammo
                             public void SetToMaxAmmo() => currentAmmo = maxAmmo;
 
-                            /// <summary> Deducts <paramref name="deduction"/> from the current ammo. </summary>
-                            /// <returns> The current ammo minus <paramref name="deduction"/>. 
-                            /// <br> If you have less ammo than required, you only lose the ammo that is left. </br></returns>
+                            /// Deducts <i>deduction</i> from the current ammo.
+                            /// returns the current ammo minus <i>deduction</i>.
+                            /// If you have less ammo than required, you only lose the ammo that is left.
                             public int DeductAmmo(int deduction)
                             {
                                 if (currentAmmo >= deduction)
@@ -174,7 +174,8 @@
                                     if (!chargeDone)
                                     {
                                         AudioManager.Sound.PlayDelayed(charge, 1.2f);
-                                        //the amount of time in seconds it needs to wait between charges of the gun to make it non-frame dependent
+                                        //the amount of time in seconds it needs to wait between charges
+                                        //of the gun to make it non-frame dependent
                                         float delayCheck = 0.05f;
 
                                         currentTimer += Time.deltaTime;
