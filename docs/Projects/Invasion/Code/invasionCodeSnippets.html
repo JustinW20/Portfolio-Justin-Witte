@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<!--
+	Directive by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Portfolio | Justin Witte</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../../../assets/css/main.css" />
+</head>
+
+<body class="is-preload">
+    <header>
+        <!-- <div class="topnav">
+                <p>Justin Witte
+                    <a href="index.html">Home</a>
+                    <a class="active" href="aboutme.html">About me</a></p>
+                </div> -->
+        <header class="major container medium">
+            <h2>Invasion code snippets</h2>
+        </header>
+    </header>
+
+    <div id="main">
+        <div class="box container">
+            <section>
+                <header>
+                    <h3>Line to rectangle collision</h3>
+                </header>
+                <p>As I have learn a lot after making this project, there is not a lot of code I'm proud of anymore. The
+                    only thing I'm proud of is the line-to-rectangle collision I made for a bossfight.
+                    <br />
+                    To make this, I first made line-to-line collision. As a rectangle consists of four lines, I could
+                    basicaly use line-to-line collision four times to get line-to-rectangle collision.
+                    <br />
+                    This looks as follows:
+                    <code class="language-java">
+                            boolean lineLine(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+
+                                // calculate the direction of the lines
+                                float uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+                                float uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+                            
+                                // if uA and uB are between 0-1, lines are colliding
+                                if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+                                  return true;
+                                }
+                                return false;
+                              }
+                        </code>
+                    What this calculates is whether one of the two outer points of line A is between the two points of
+                    line B (uA). If the point is inbetween the two points of line B, the value of uA is between 0 and 1.
+                    It then does the same thing the other way around (uB). If both values are in the range between 0 and
+                    1, the lines are colliding. Now I can use this for every side of the rectangle to make
+                    line-to-rectangle collision.
+                    <code class="language-java">
+                        boolean lineRect(float x3, float y3, float x4, float y4, float xR, float yR, float xSize, float ySize) {
+
+                            //checking if the line hits any of the players sides
+                            boolean left = lineLine(x3, y3, x4, y4, xR, yR, xR, yR + ySize);
+                            boolean right = lineLine(x3, y3, x4, y4, xR + xSize, yR, xR + xSize, yR + ySize);
+                            boolean top = lineLine(x3, y3, x4, y4, xR, yR, xR + xSize, yR);
+                            boolean bottom = lineLine(x3, y3, x4, y4, xR, yR + ySize, xR + xSize, yR + ySize);
+                        
+                            if (left || right || top || bottom) {
+                              return true;
+                            }
+                            return false;
+                        }
+                    </code>
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+	<div id="footer">
+		<div class="container medium">
+
+			<header class="major last">
+				<h2>Contact me</h2>
+			</header>
+
+			<p> e-mail: jcmwitte@outlook.com
+				<!--<br />
+						Or message me directly -->
+			</p>
+
+			<!--<form method="post" action="#">
+						<div class="row">
+							<div class="col-6 col-12-mobilep">
+								<input type="text" name="name" placeholder="Name" />
+							</div>
+							<div class="col-6 col-12-mobilep">
+								<input type="email" name="email" placeholder="Email" />
+							</div>
+							<div class="col-12">
+								<textarea name="message" placeholder="Message" rows="6"></textarea>
+							</div>
+							<div class="col-12">
+								<ul class="actions special">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</div>
+						</div>
+					</form>-->
+
+			<ul class="icons">
+				<!--<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>-->
+				<li><a href="#" class="icon brands fa-github" name-value="github"><span class="label">Github</span> </a>
+				</li>
+				<!--<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>-->
+				<li><a href="#" class="icon brands fa-linkedin" name-value="linkedin"><span
+							class="label">LinkedIn</span></a></li>
+			</ul>
+
+			<ul class="copyright">
+				<li>&copy; Untitled. All rights reserved.</li>
+				<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+			</ul>
+
+		</div>
+	</div>
+
+    <!-- Scripts -->
+    <script src="../../../assets/js/jquery.min.js"></script>
+    <script src="../../../assets/js/browser.min.js"></script>
+    <script src="../../../assets/js/breakpoints.min.js"></script>
+    <script src="../../../assets/js/util.js"></script>
+    <script src="../../../assets/js/main.js"></script>
+</body>
+
+</html>
