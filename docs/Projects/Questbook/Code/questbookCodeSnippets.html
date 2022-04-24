@@ -141,6 +141,8 @@
                 <br />
                 Next to that, I also made a sorting algorithm for sorting by id. This one looks like this:
                 <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
                 /// Sorts the Questlist in order of the IDs of the quests
                 /// <i>oldList</i> is the Questlist you want to sort
                 /// returns Sorted questlist
@@ -169,8 +171,41 @@
                     }
                     return newList;
                 }
+            </code>
+        </pre>
                 <br />
-                This algorithm sorts by id, starting with the lowest one.
+                This algorithm sorts by id, starting with the lowest one. To activate these sorting algorithm, the
+                player has to press a button (which is now set to "Q"). This gets regulated in a different script, which
+                makes sure it always calls the sorting algorithm which is not used now. So when "Q" is pressed, it calls
+                the function and adds 1 to the variable making sure of using the right sorting algorithm.
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        // Update is called once per frame
+                        void Update()
+                        {
+                            //if Q gets pressed the Questbook list gets sorted
+                            if(Input.GetKeyDown(KeyCode.Q))
+                                SortList(sortVariable++);
+                        }
+                    </code>
+                </pre>
+                <br />
+                The function it calls looks like this:
+                <br />
+                <pre class="line-numbers">
+                    <code class="language-csharp">
+                        /// Makes sure the right sorting function is called and not the same one as before
+                        private void SortList(int i)
+                        {
+                            if(i % 2 == 0)
+                                QuestList.questList = QuestList.SortToID(QuestList.questList);
+                            else if(i % 2 == 1)
+                                QuestList.questList = QuestList.SortToCompleted(QuestList.questList);
+                            printQuests.PrintList(contentSize, buttonObject, idText, titleText, button);
+                        }
+                    </code>
+                </pre>
                 </p>
             </section>
         </div>
