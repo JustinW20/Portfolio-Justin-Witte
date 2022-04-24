@@ -29,10 +29,58 @@
         <div class="box container">
             <section>
                 <header>
-                    <h3>Gun scripts</h3>
+                    <h3>A quest</h3>
                 </header>
                 <p>
-                    
+                    For the questbook, I obviously needed a script for a quest, so developers could make quests for the
+                    game. I made these quests inherit "ScriptableObject" so they could easily be modified in the unity
+                    editor. As it is not properly added into a game, some functions in the script are left empty.
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            [CreateAssetMenu(fileName = "Quest", menuName = "ScriptableObjects/Quest", order = 1)]
+                            public class Quest : ScriptableObject
+                            {
+                                public enum QuestType
+                                {
+                                    Find, //Find a/some item(s) scattered across a region to bring to them
+                                    GoTo, //Go to a specific place to meet something or someone
+                                    Kill, //Kill a certain enemy
+                                    Collect //Get a certain item to bring to the npc
+                                }
+
+                                [SerializeField] QuestType thisQuestType;
+                                [SerializeField] public int id;
+                                [SerializeField] public string title;
+                                [SerializeField] public bool isCompleted;
+                                [SerializeField] public string questDescription;
+                                object questReward;
+
+                                // Update is called once per frame
+                                void Update()
+                                {
+                                    
+                                }
+
+                                public void CompleteQuest(object reward)
+                                {
+                                    //make sure the player gets a screen in which you can see the player completed the quest
+                                    //Make sure the quest gets completed in the questbook
+                                    //Make sure the player gets the rewards
+                                }
+
+                                public void ActivateQuest()
+                                {
+                                    
+                                }
+                            }
+                        </code>
+                    </pre>
+                <br />
+                Most important for now are the variables from "thisQuestType" to "questDescription". As they are
+                SerializeFields, developers could modify them from the Unity editor, this looks like this:
+                <br />
+                <img src="Quest.png" width="200">
                 </p>
             </section>
         </div>
@@ -42,10 +90,87 @@
         <div class="box container">
             <section>
                 <header>
-                    <h3>Settings menu</h3>
+                    <h3>Sorting algorithms</h3>
                 </header>
                 <p>
-                    
+                    As there can be lots of quests in the questbook, it can be hard to find the right quest you are
+                    looking for. So I made some sorting algorithms to sort the quests. I made one for sorting on
+                    completion, so the quests you already completed are on the bottom, as you don't need those anymore.
+                    This one looks like this:
+                    <br />
+                <pre class="line-numbers">
+                        <code class="language-csharp">
+                            /// Sorts the list in order of completion, puts uncompleted quests on top
+                            /// <i>oldList</i> is the list you want to sort
+                            /// returns The sorted list
+                            public static List[Quest] SortToCompleted(List[Quest] oldList)
+                            {
+                                int listCount = oldList.Count;
+                                List[Quest] newList = new List[Quest]();
+                                bool allUncompletedAdded = false;
+                                while (newList.Count < listCount)
+                                {
+                                    for (int i = 0; i < oldList.Count; i++)
+                                    {
+                                        if (!allUncompletedAdded)
+                                        {
+                                            if (!oldList[i].isCompleted)
+                                            {
+                                                newList.Add(oldList[i]);
+                                                oldList.Remove(oldList[i]);
+                                                break;
+                                            }
+                                            else if (i == oldList.Count - 1)
+                                            {
+                                                allUncompletedAdded = true;
+                                                break;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            newList.Add(oldList[i]);
+                                            oldList.Remove(oldList[i]);
+                                            break;
+                                        }
+                                    }
+                                }
+                                return newList;
+                            }
+                        </code>
+                    </pre>
+                <br />
+                Next to that, I also made a sorting algorithm for sorting by id. This one looks like this:
+                <br />
+                /// Sorts the Questlist in order of the IDs of the quests
+                /// <i>oldList</i> is the Questlist you want to sort
+                /// returns Sorted questlist
+                public static List[Quest] SortToID(List[Quest] oldList)
+                {
+                    int listCount = oldList.Count;
+                    List[Quest] newList = new List[Quest]();
+                    int currentSearchID = 1;
+                    while (newList.Count < listCount)
+                    {
+                        for (int i = 0; i < oldList.Count; i++)
+                        {
+                            if (oldList[i].id == currentSearchID)
+                            {
+                                newList.Add(oldList[i]);
+                                oldList.Remove(oldList[i]);
+                                currentSearchID++;
+                                break;
+                            }
+                            else if (i == oldList.Count - 1)
+                            {
+                                currentSearchID++;
+                                break;
+                            }
+                        }
+                    }
+                    return newList;
+                }
+                <br />
+                This algorithm sorts by id, starting with the lowest one.
                 </p>
             </section>
         </div>
