@@ -3504,7 +3504,7 @@ input[type="button"].small,
   .next {
 	cursor: pointer;
 	position: absolute;
-	top: 40%;
+	top: 30%;
 	width: auto;
 	padding: 16px;
 	margin-top: -50px;
@@ -3514,6 +3514,7 @@ input[type="button"].small,
 	border-radius: 0 3px 3px 0;
 	user-select: none;
 	-webkit-user-select: none;
+	background-color: rgba(0, 0, 0, 0.8);
   }
   
   /* Position the "next button" to the right */
