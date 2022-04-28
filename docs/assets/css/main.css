@@ -3504,7 +3504,7 @@ input[type="button"].small,
   .next {
 	cursor: pointer;
 	position: absolute;
-	top: 30%;
+	top: 40%;
 	width: auto;
 	padding: 16px;
 	margin-top: -50px;
