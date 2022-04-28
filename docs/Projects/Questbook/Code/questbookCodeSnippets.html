@@ -38,15 +38,20 @@
                     <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-[CreateAssetMenu(fileName = "Quest", menuName = "ScriptableObjects/Quest", order = 1)]
+[CreateAssetMenu(fileName = "Quest", menuName =
+ "ScriptableObjects/Quest", order = 1)]
 public class Quest : ScriptableObject
 {
     public enum QuestType
     {
-        Find, //Find a/some item(s) scattered across a region to bring to them
-        GoTo, //Go to a specific place to meet something or someone
-        Kill, //Kill a certain enemy
-        Collect //Get a certain item to bring to the npc
+        //Find a/some item(s) scattered across a region
+        Find, 
+        //Go to a specific place to meet something or someone
+        GoTo, 
+        //Kill a certain enemy
+        Kill, 
+        //Get a certain item to bring to the npc
+        Collect
     }
 
     [SerializeField] QuestType thisQuestType;
@@ -64,8 +69,10 @@ public class Quest : ScriptableObject
 
     public void CompleteQuest(object reward)
     {
-        //make sure the player gets a screen in which you can see the player completed the quest
-        //Make sure the quest gets completed in the questbook
+        //make sure the player gets a screen in 
+        //which you can see the player completed the quest
+        //Make sure the quest gets completed in 
+        //the questbook
         //Make sure the player gets the rewards
     }
 
@@ -100,10 +107,12 @@ public class Quest : ScriptableObject
                     <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-/// Sorts the list in order of completion, puts uncompleted quests on top
+/// Sorts the list in order of completion,
+/// puts uncompleted quests on top
 /// <i>oldList</i> is the list you want to sort
 /// returns The sorted list
-public static List[Quest] SortToCompleted(List[Quest] oldList)
+public static List[Quest] SortToCompleted(
+    List[Quest] oldList)
 {
     int listCount = oldList.Count;
     List[Quest] newList = new List[Quest]();
@@ -184,7 +193,8 @@ public static List[Quest] SortToID(List[Quest] oldList)
                         // Update is called once per frame
                         void Update()
                         {
-                            //if Q gets pressed the Questbook list gets sorted
+                            //if Q gets pressed the Questbook list
+                            //gets sorted
                             if(Input.GetKeyDown(KeyCode.Q))
                                 SortList(sortVariable++);
                         }
@@ -195,14 +205,18 @@ public static List[Quest] SortToID(List[Quest] oldList)
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        /// Makes sure the right sorting function is called and not the same one as before
+                        /// Makes sure the right sorting function
+                        /// is called and not the same one as before
                         private void SortList(int i)
                         {
                             if(i % 2 == 0)
-                                QuestList.questList = QuestList.SortToID(QuestList.questList);
+                                QuestList.questList = 
+                                QuestList.SortToID(QuestList.questList);
                             else if(i % 2 == 1)
-                                QuestList.questList = QuestList.SortToCompleted(QuestList.questList);
-                            printQuests.PrintList(contentSize, buttonObject, idText, titleText, button);
+                                QuestList.questList = 
+                                QuestList.SortToCompleted(QuestList.questList);
+                            printQuests.PrintList(contentSize, 
+                                buttonObject, idText, titleText, button);
                         }
                     </code>
                 </pre>

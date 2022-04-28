@@ -44,12 +44,14 @@
                         <code class="language-csharp">
 public interface IHitscan
 {
-    public IEnumerator Shoot(Vector3 startPosition, Vector3 direction);
+    public IEnumerator Shoot(
+        Vector3 startPosition, Vector3 direction);
 }    
 
 public interface IProjectileShot<Bullet>
 {
-    public void Shoot(Vector3 startPosition, Vector3 direction, Bullet bullet);
+    public void Shoot(
+        Vector3 startPosition, Vector3 direction, Bullet bullet);
 }
                         </code>
                     </pre>
@@ -71,21 +73,27 @@ public void GiveDamage(Target target)
     }
 }
 
-/// Sets an <i>action</i> that runs when the player shoots an enemy.
+/// Sets an <i>action</i> that runs when 
+/// the player shoots an enemy.
 /// Only use this method within the <i>Awake</i> or <i>Start</i>.
 public void OnHit(Action action) => GameEvents.onHit += _ => action();
 
-/// Sets an <i>action</i> that runs when the player shoots an enemy.
-/// This overload requires an instance of Target as parameter.
+/// Sets an <i>action</i> that runs when
+/// the player shoots an enemy.
+/// This overload requires an instance of
+/// Target as parameter.
 /// Only use this method within the <i>Awake</i> or <i>Start</i>.    
-public void OnHit(Action[Target] action) => GameEvents.onHit += action;
+public void OnHit(Action[Target] action) =>
+ GameEvents.onHit += action;
 
 ///Sets the current ammo to the max ammo
-public void SetToMaxAmmo() => currentAmmo = maxAmmo;
+public void SetToMaxAmmo() => 
+ currentAmmo = maxAmmo;
 
 /// Deducts <i>deduction</i> from the current ammo.
 /// returns the current ammo minus <i>deduction</i>.
-/// If you have less ammo than required, you only lose the ammo that is left.
+/// If you have less ammo than required,
+/// you only lose the ammo that is left.
 public int DeductAmmo(int deduction)
 {
     if (currentAmmo >= deduction)
@@ -132,19 +140,23 @@ public class ChargingPistol : Gun, IHitscan
         chargingEffect.gameObject.SetActive(false);
     }
 
-    //not using base.Update() to be able to change the way the gun shoots
+    //not using base.Update() to be able to change
+    //the way the gun shoots
     //Update is called once per frame
     public override void Update()
     {
         base.Update();
-        if (Input.GetKey(KeyCode.Mouse0) && NextShotReady())
+        if (Input.GetKey(KeyCode.Mouse0) &&
+             NextShotReady())
             ChargeGun(maxCharge);
 
-            if ((charging && Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
+            if ((charging && 
+                Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
             {
                 //chargingEffect.Pause();
                 chargingEffect.gameObject.SetActive(false);
-                StartCoroutine(Shoot(camera.transform.position, camera.transform.forward));
+                StartCoroutine(Shoot(
+                    camera.transform.position, camera.transform.forward));
                 muzzleFlash.Play();
                 AudioManager.Sound.Stop(charge);
                 AudioManager.Sound.Play(shootSound);
@@ -168,8 +180,9 @@ public class ChargingPistol : Gun, IHitscan
         if (!chargeDone)
         {
             AudioManager.Sound.PlayDelayed(charge, 1.2f);
-            //the amount of time in seconds it needs to wait between charges
-            //of the gun to make it non-frame dependent
+            //the amount of time in seconds it needs to wait
+            // between charges of the gun
+            // to make it non-frame dependent
             float delayCheck = 0.05f;
 
             currentTimer += Time.deltaTime;
@@ -197,17 +210,21 @@ public class ChargingPistol : Gun, IHitscan
         chargeCirle.fillAmount = currentCharge * 0.05f;
     }
 
-    public IEnumerator Shoot(Vector3 startPosition, Vector3 direction)
+    public IEnumerator Shoot(
+        Vector3 startPosition, Vector3 direction)
     {
         animator.SetBool("Shooting", true);
         direction.Normalize();
         RaycastHit shot;
 
-        if (Physics.Raycast(startPosition, direction, out shot))
+        if (Physics.Raycast(
+            startPosition, direction, out shot))
         {
-            GameEvents.shot?.Invoke(shot, (int)bulletDamage);
+            GameEvents.shot?.Invoke(
+                shot, (int)bulletDamage);
             //add effects and damage here
-            Target target = shot.transform.GetComponent[Target]();
+            Target target = 
+                shot.transform.GetComponent[Target]();
             GiveDamage(target);
         }
         currentAmmo--;
@@ -237,12 +254,12 @@ public class ChargingPistol : Gun, IHitscan
                     <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            public void ChangeSound(float volume)
-                            {
-                                ChangeText(soundText, volume);
-                                PlayerPrefs.SetFloat("SoundVolume", volume);
-                                GameEvents.onVolumeChange?.Invoke();
-                            }             
+public void ChangeSound(float volume)
+{
+    ChangeText(soundText, volume);
+    PlayerPrefs.SetFloat("SoundVolume", volume);
+    GameEvents.onVolumeChange?.Invoke();
+}             
                         </code>
                     </pre>
                 <br />
@@ -256,7 +273,8 @@ public class ChargingPistol : Gun, IHitscan
                 <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-public void CheckValueExists(string floatName, Slider slider, Text text)
+public void CheckValueExists(
+    string floatName, Slider slider, Text text)
 {
     float a;
     if((a = PlayerPrefs.GetFloat(floatName)) != 0)

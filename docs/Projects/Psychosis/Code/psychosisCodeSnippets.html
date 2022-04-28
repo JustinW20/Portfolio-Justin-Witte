@@ -51,7 +51,8 @@ public bool Update()
         string text = newText.Substring(0, characterIndex);
         if (invisibleCharacters)
         {
-            text += "<color=#00000000>" + newText.Substring(characterIndex) + "</color>";
+            text += "color=#00000000"
+             + newText.Substring(characterIndex) + "/color";
         }
         uiText.text = text;
 
@@ -95,17 +96,23 @@ void Update()
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-public static TextWriterSingle AddWriter(Text uiText, string newText, float timePerCharacter, 
-    Action onComplete = null, bool invisibleCharacters = true, bool removePreviousWriter = true)
+public static TextWriterSingle AddWriter(Text uiText, 
+string newText, float timePerCharacter, 
+    Action onComplete = null, 
+    bool invisibleCharacters = true, 
+    bool removePreviousWriter = true)
 {
     if (removePreviousWriter)
         instance.RemoveWriter_Local(uiText);
-    return instance.AddWriter_Local(uiText, newText, timePerCharacter, onComplete, invisibleCharacters);
+    return instance.AddWriter_Local(uiText, newText,
+     timePerCharacter, onComplete, invisibleCharacters);
 }
-private TextWriterSingle AddWriter_Local(Text uiText, string newText, float timePerCharacter,
+private TextWriterSingle AddWriter_Local(Text uiText,
+ string newText, float timePerCharacter,
     Action onComplete, bool invisibleCharacters)
 {
-    TextWriterSingle textWriterSingle = new TextWriterSingle(uiText, newText, timePerCharacter,
+    TextWriterSingle textWriterSingle = 
+    new TextWriterSingle(uiText, newText, timePerCharacter,
         onComplete, invisibleCharacters);
     textWriterSingleList.Add(textWriterSingle);
     return textWriterSingle;
@@ -138,7 +145,8 @@ private void RemoveWriter_Local(Text uiText)
 private void Awake()
 {
     text = transform.Find("Text").GetComponent<Text>();
-    textWriterSingle = TextWriter.AddWriter(text, messageArray[0], textSpeed);
+    textWriterSingle = 
+    TextWriter.AddWriter(text, messageArray[0], textSpeed);
 }
 
 void Update()
@@ -157,7 +165,8 @@ void Update()
         {
             string message = messageArray[i];
             StartTalking();
-            textWriterSingle = TextWriter.AddWriter(text, message, textSpeed, StopTalking);
+            textWriterSingle = TextWriter.AddWriter(
+                text, message, textSpeed, StopTalking);
         }
     }
 }
