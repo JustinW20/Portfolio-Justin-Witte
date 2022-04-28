@@ -46,7 +46,7 @@ public class Quest : ScriptableObject
     {
         //Find a/some item(s) scattered across a region
         Find, 
-        //Go to a specific place to meet something or someone
+        //Go to a specific place to meet someone
         GoTo, 
         //Kill a certain enemy
         Kill, 
@@ -70,7 +70,8 @@ public class Quest : ScriptableObject
     public void CompleteQuest(object reward)
     {
         //make sure the player gets a screen in 
-        //which you can see the player completed the quest
+        //which you can see the player 
+        //completed the quest
         //Make sure the quest gets completed in 
         //the questbook
         //Make sure the player gets the rewards
@@ -88,7 +89,7 @@ public class Quest : ScriptableObject
                 SerializeFields, developers could modify them from the Unity editor, this looks like this:
                 <br />
                 <center>    
-                    <img src="Quest.png" width="400">
+                    <img src="Quest.png" width="300">
                 </center>
                 </p>
             </section>
@@ -190,14 +191,14 @@ public static List[Quest] SortToID(List[Quest] oldList)
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        // Update is called once per frame
-                        void Update()
-                        {
-                            //if Q gets pressed the Questbook list
-                            //gets sorted
-                            if(Input.GetKeyDown(KeyCode.Q))
-                                SortList(sortVariable++);
-                        }
+// Update is called once per frame
+void Update()
+{
+    //if Q gets pressed the Questbook list
+    //gets sorted
+    if(Input.GetKeyDown(KeyCode.Q))
+        SortList(sortVariable++);
+}
                     </code>
                 </pre>
                 <br />
@@ -205,19 +206,19 @@ public static List[Quest] SortToID(List[Quest] oldList)
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        /// Makes sure the right sorting function
-                        /// is called and not the same one as before
-                        private void SortList(int i)
-                        {
-                            if(i % 2 == 0)
-                                QuestList.questList = 
-                                QuestList.SortToID(QuestList.questList);
-                            else if(i % 2 == 1)
-                                QuestList.questList = 
-                                QuestList.SortToCompleted(QuestList.questList);
-                            printQuests.PrintList(contentSize, 
-                                buttonObject, idText, titleText, button);
-                        }
+/// Makes sure the right sorting function
+/// is called and not the same one as before
+private void SortList(int i)
+{
+    if(i % 2 == 0)
+        QuestList.questList = 
+        QuestList.SortToID(QuestList.questList);
+    else if(i % 2 == 1)
+        QuestList.questList = 
+        QuestList.SortToCompleted(QuestList.questList);
+    printQuests.PrintList(contentSize, 
+        buttonObject, idText, titleText, button);
+}
                     </code>
                 </pre>
                 </p>

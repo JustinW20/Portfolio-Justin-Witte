@@ -105,15 +105,17 @@ string newText, float timePerCharacter,
     if (removePreviousWriter)
         instance.RemoveWriter_Local(uiText);
     return instance.AddWriter_Local(uiText, newText,
-     timePerCharacter, onComplete, invisibleCharacters);
+     timePerCharacter, onComplete, 
+     invisibleCharacters);
 }
 private TextWriterSingle AddWriter_Local(Text uiText,
  string newText, float timePerCharacter,
     Action onComplete, bool invisibleCharacters)
 {
     TextWriterSingle textWriterSingle = 
-    new TextWriterSingle(uiText, newText, timePerCharacter,
-        onComplete, invisibleCharacters);
+    new TextWriterSingle(uiText, newText,
+     timePerCharacter,
+     onComplete, invisibleCharacters);
     textWriterSingleList.Add(textWriterSingle);
     return textWriterSingle;
 }
@@ -144,9 +146,11 @@ private void RemoveWriter_Local(Text uiText)
                     <code class="language-csharp">
 private void Awake()
 {
-    text = transform.Find("Text").GetComponent<Text>();
+    text = transform.Find("Text").
+        GetComponent[Text]();
     textWriterSingle = 
-    TextWriter.AddWriter(text, messageArray[0], textSpeed);
+    TextWriter.AddWriter(text,
+     messageArray[0], textSpeed);
 }
 
 void Update()

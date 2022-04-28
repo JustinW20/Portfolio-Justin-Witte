@@ -51,7 +51,8 @@ public interface IHitscan
 public interface IProjectileShot<Bullet>
 {
     public void Shoot(
-        Vector3 startPosition, Vector3 direction, Bullet bullet);
+        Vector3 startPosition, Vector3 direction, 
+        Bullet bullet);
 }
                         </code>
                     </pre>
@@ -76,7 +77,8 @@ public void GiveDamage(Target target)
 /// Sets an <i>action</i> that runs when 
 /// the player shoots an enemy.
 /// Only use this method within the <i>Awake</i> or <i>Start</i>.
-public void OnHit(Action action) => GameEvents.onHit += _ => action();
+public void OnHit(Action action) => 
+GameEvents.onHit += _ => action();
 
 /// Sets an <i>action</i> that runs when
 /// the player shoots an enemy.
@@ -151,12 +153,14 @@ public class ChargingPistol : Gun, IHitscan
             ChargeGun(maxCharge);
 
             if ((charging && 
-                Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
+                Input.GetKeyUp(KeyCode.Mouse0)) || 
+                chargeDone)
             {
                 //chargingEffect.Pause();
                 chargingEffect.gameObject.SetActive(false);
                 StartCoroutine(Shoot(
-                    camera.transform.position, camera.transform.forward));
+                    camera.transform.position, 
+                    camera.transform.forward));
                 muzzleFlash.Play();
                 AudioManager.Sound.Stop(charge);
                 AudioManager.Sound.Play(shootSound);

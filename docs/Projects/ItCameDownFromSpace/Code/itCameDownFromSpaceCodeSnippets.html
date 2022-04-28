@@ -81,7 +81,8 @@ public void ReadTimeCsv()
 {
     var csvTable1 = new DataTable();
     using (var csvReader1 = 
-        new CsvReader(new StreamReader(File.OpenRead(
+        new CsvReader(new StreamReader(
+            File.OpenRead(
             @".\Content\ExcelFiles\Highscore.csv")), false))
     {
         //loading the csv file
@@ -89,8 +90,10 @@ public void ReadTimeCsv()
     }
     //reading the csv file and turning the vars into int
     searchTime.Add(item: new SearchTime { 
-        minuteTime = Convert.ToInt16(csvTable1.Rows[0][0]), 
-        secondTime = Convert.ToInt16(csvTable1.Rows[0][1]) });
+        minuteTime = Convert.ToInt16(
+            csvTable1.Rows[0][0]), 
+        secondTime = Convert.ToInt16(
+            csvTable1.Rows[0][1]) });
 }          
                     </code>
                 </pre>
@@ -101,7 +104,8 @@ public void ReadTimeCsv()
                 <pre class="line-numbers">
                     <code class="language-csharp">
 public void CheckRecordBeaten(int recordMinute, 
-int recordSecond, int currentMinute, int currentSecond)
+int recordSecond, int currentMinute,
+ int currentSecond)
 {
     if (currentMinute < recordMinute)
     {
@@ -149,7 +153,8 @@ private void CalculateAerialSpeed()
         previousPositionPlayer;
 
     Vector2 previousPositionHand = new Vector2(
-        (float)lasthand.previousX, (float)lasthand.previousY);
+        (float)lasthand.previousX, 
+        (float)lasthand.previousY);
     Vector2 currentVelocityHand = 
         lasthand.position - previousPositionHand;
 
@@ -168,12 +173,15 @@ private void CalculateAerialSpeed()
     //Calculate velocity and 
     //adding scalar to lower the innitial gained speed
     Vector2 calculateVelocity = (
-        (currentVelocity * (float)PlayingState.physics.linearVelocity0)
-        + (currentVelocityHand * 
-        (float)PlayingState.physics.linearVelocity1)) * 0.70f;
+        (currentVelocity * 
+        (float)PlayingState.physics.linearVelocity0) + 
+        (currentVelocityHand * 
+        (float)PlayingState.physics.linearVelocity1)) * 
+        0.70f;
     const int MAXSPEED = 800;
     //Checks if the velocity is higher 
-    //than the max speed and if so sets it back to the max speed
+    //than the max speed and if so sets it 
+    //back to the max speed
     if (calculateVelocity.Length() > MAXSPEED)
     {
         calculateVelocity.Normalize();
