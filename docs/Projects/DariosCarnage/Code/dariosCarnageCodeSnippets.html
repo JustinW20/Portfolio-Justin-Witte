@@ -42,15 +42,15 @@
                     <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            public interface IHitscan
-                            {
-                                public IEnumerator Shoot(Vector3 startPosition, Vector3 direction);
-                            }    
-                            
-                            public interface IProjectileShot<Bullet>
-                            {
-                                public void Shoot(Vector3 startPosition, Vector3 direction, Bullet bullet);
-                            }
+public interface IHitscan
+{
+    public IEnumerator Shoot(Vector3 startPosition, Vector3 direction);
+}    
+
+public interface IProjectileShot<Bullet>
+{
+    public void Shoot(Vector3 startPosition, Vector3 direction, Bullet bullet);
+}
                         </code>
                     </pre>
                 <br />
@@ -60,46 +60,46 @@
                 <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            /// Give damage to the <i>target</i>.
-                            /// <i>target</i> The object you hit with the shot.
-                            public void GiveDamage(Target target)
-                            {
-                                if (target != null)
-                                {
-                                    GameEvents.onHit?.Invoke(target);
-                                    target.TakeDamage(bulletDamage);
-                                }
-                            }
+/// Give damage to the <i>target</i>.
+/// <i>target</i> The object you hit with the shot.
+public void GiveDamage(Target target)
+{
+    if (target != null)
+    {
+        GameEvents.onHit?.Invoke(target);
+        target.TakeDamage(bulletDamage);
+    }
+}
 
-                            /// Sets an <i>action</i> that runs when the player shoots an enemy.
-                            /// Only use this method within the <i>Awake</i> or <i>Start</i>.
-                            public void OnHit(Action action) => GameEvents.onHit += _ => action();
+/// Sets an <i>action</i> that runs when the player shoots an enemy.
+/// Only use this method within the <i>Awake</i> or <i>Start</i>.
+public void OnHit(Action action) => GameEvents.onHit += _ => action();
 
-                            /// Sets an <i>action</i> that runs when the player shoots an enemy.
-                            /// This overload requires an instance of Target as parameter.
-                            /// Only use this method within the <i>Awake</i> or <i>Start</i>.    
-                            public void OnHit(Action[Target] action) => GameEvents.onHit += action;
+/// Sets an <i>action</i> that runs when the player shoots an enemy.
+/// This overload requires an instance of Target as parameter.
+/// Only use this method within the <i>Awake</i> or <i>Start</i>.    
+public void OnHit(Action[Target] action) => GameEvents.onHit += action;
 
-                            ///Sets the current ammo to the max ammo
-                            public void SetToMaxAmmo() => currentAmmo = maxAmmo;
+///Sets the current ammo to the max ammo
+public void SetToMaxAmmo() => currentAmmo = maxAmmo;
 
-                            /// Deducts <i>deduction</i> from the current ammo.
-                            /// returns the current ammo minus <i>deduction</i>.
-                            /// If you have less ammo than required, you only lose the ammo that is left.
-                            public int DeductAmmo(int deduction)
-                            {
-                                if (currentAmmo >= deduction)
-                                {
-                                    currentAmmo -= deduction;
-                                    return deduction;
-                                }
-                                else
-                                {
-                                    int localCurrentAmmo = currentAmmo;
-                                    currentAmmo = 0;
-                                    return localCurrentAmmo;
-                                }
-                            }
+/// Deducts <i>deduction</i> from the current ammo.
+/// returns the current ammo minus <i>deduction</i>.
+/// If you have less ammo than required, you only lose the ammo that is left.
+public int DeductAmmo(int deduction)
+{
+    if (currentAmmo >= deduction)
+    {
+        currentAmmo -= deduction;
+        return deduction;
+    }
+    else
+    {
+        int localCurrentAmmo = currentAmmo;
+        currentAmmo = 0;
+        return localCurrentAmmo;
+    }
+}
                         </code>
                     </pre>
                 <br />
@@ -111,110 +111,110 @@
                 <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            public class ChargingPistol : Gun, IHitscan
-                            {
-                                readonly float maxCharge = 20;
-                                float currentTimer = 0;
-                                int currentCharge = 0;
-                                private bool chargeDone, charging;
-                                [SerializeField] Image chargeCirle;
-                                [SerializeField] ParticleSystem chargingEffect;
-                                [SerializeField, Header("Sounds")] Sound charge;
+public class ChargingPistol : Gun, IHitscan
+{
+    readonly float maxCharge = 20;
+    float currentTimer = 0;
+    int currentCharge = 0;
+    private bool chargeDone, charging;
+    [SerializeField] Image chargeCirle;
+    [SerializeField] ParticleSystem chargingEffect;
+    [SerializeField, Header("Sounds")] Sound charge;
 
-                                //Start is called before the first frame update
-                                public override void Start()
-                                {
-                                    reloadTime = 3;
-                                    maxAmmo = 15;
-                                    shootTimer = 0.1f;
-                                    bulletDamage = 0;
-                                    base.Start();
-                                    chargingEffect.gameObject.SetActive(false);
-                                }
+    //Start is called before the first frame update
+    public override void Start()
+    {
+        reloadTime = 3;
+        maxAmmo = 15;
+        shootTimer = 0.1f;
+        bulletDamage = 0;
+        base.Start();
+        chargingEffect.gameObject.SetActive(false);
+    }
 
-                                //not using base.Update() to be able to change the way the gun shoots
-                                //Update is called once per frame
-                                public override void Update()
-                                {
-                                    base.Update();
-                                    if (Input.GetKey(KeyCode.Mouse0) && NextShotReady())
-                                        ChargeGun(maxCharge);
+    //not using base.Update() to be able to change the way the gun shoots
+    //Update is called once per frame
+    public override void Update()
+    {
+        base.Update();
+        if (Input.GetKey(KeyCode.Mouse0) && NextShotReady())
+            ChargeGun(maxCharge);
 
-                                        if ((charging && Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
-                                        {
-                                            //chargingEffect.Pause();
-                                            chargingEffect.gameObject.SetActive(false);
-                                            StartCoroutine(Shoot(camera.transform.position, camera.transform.forward));
-                                            muzzleFlash.Play();
-                                            AudioManager.Sound.Stop(charge);
-                                            AudioManager.Sound.Play(shootSound);
-                                            ResetCharge();
-                                            StartCoroutine(ShootCooldown(shootTimer));
-                                        }
-                                    
-                                    UpdateUI();
-                                }
+            if ((charging && Input.GetKeyUp(KeyCode.Mouse0)) || chargeDone)
+            {
+                //chargingEffect.Pause();
+                chargingEffect.gameObject.SetActive(false);
+                StartCoroutine(Shoot(camera.transform.position, camera.transform.forward));
+                muzzleFlash.Play();
+                AudioManager.Sound.Stop(charge);
+                AudioManager.Sound.Play(shootSound);
+                ResetCharge();
+                StartCoroutine(ShootCooldown(shootTimer));
+            }
+        
+        UpdateUI();
+    }
 
-                                //a function that charges the gun
-                                public void ChargeGun(float maxCharge)
-                                {
-                                    charging = true;
-                                    chargingEffect.gameObject.SetActive(true);
-                                    //chargingEffect.Play();
-                                    if (currentCharge >= maxCharge)
-                                    {
-                                        chargeDone = true;
-                                    }
-                                    if (!chargeDone)
-                                    {
-                                        AudioManager.Sound.PlayDelayed(charge, 1.2f);
-                                        //the amount of time in seconds it needs to wait between charges
-                                        //of the gun to make it non-frame dependent
-                                        float delayCheck = 0.05f;
+    //a function that charges the gun
+    public void ChargeGun(float maxCharge)
+    {
+        charging = true;
+        chargingEffect.gameObject.SetActive(true);
+        //chargingEffect.Play();
+        if (currentCharge >= maxCharge)
+        {
+            chargeDone = true;
+        }
+        if (!chargeDone)
+        {
+            AudioManager.Sound.PlayDelayed(charge, 1.2f);
+            //the amount of time in seconds it needs to wait between charges
+            //of the gun to make it non-frame dependent
+            float delayCheck = 0.05f;
 
-                                        currentTimer += Time.deltaTime;
+            currentTimer += Time.deltaTime;
 
-                                        if (currentTimer >= delayCheck)
-                                        {
-                                            currentTimer = 0;
-                                            currentCharge++;
-                                            bulletDamage = currentCharge * 2;
-                                            shootTimer = currentCharge / 13;
-                                        }
-                                    }
-                                }
+            if (currentTimer >= delayCheck)
+            {
+                currentTimer = 0;
+                currentCharge++;
+                bulletDamage = currentCharge * 2;
+                shootTimer = currentCharge / 13;
+            }
+        }
+    }
 
-                                void ResetCharge()
-                                {
-                                    chargeDone = false;
-                                    charging = false;
-                                    currentCharge = 0;
-                                }
+    void ResetCharge()
+    {
+        chargeDone = false;
+        charging = false;
+        currentCharge = 0;
+    }
 
-                                public override void UpdateUI()
-                                {
-                                    base.UpdateUI();
-                                    chargeCirle.fillAmount = currentCharge * 0.05f;
-                                }
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        chargeCirle.fillAmount = currentCharge * 0.05f;
+    }
 
-                                public IEnumerator Shoot(Vector3 startPosition, Vector3 direction)
-                                {
-                                    animator.SetBool("Shooting", true);
-                                    direction.Normalize();
-                                    RaycastHit shot;
+    public IEnumerator Shoot(Vector3 startPosition, Vector3 direction)
+    {
+        animator.SetBool("Shooting", true);
+        direction.Normalize();
+        RaycastHit shot;
 
-                                    if (Physics.Raycast(startPosition, direction, out shot))
-                                    {
-                                        GameEvents.shot?.Invoke(shot, (int)bulletDamage);
-                                        //add effects and damage here
-                                        Target target = shot.transform.GetComponent[Target]();
-                                        GiveDamage(target);
-                                    }
-                                    currentAmmo--;
-                                    yield return new WaitForEndOfFrame();
-                                    animator.SetBool("Shooting", false);
-                                }
-                            }
+        if (Physics.Raycast(startPosition, direction, out shot))
+        {
+            GameEvents.shot?.Invoke(shot, (int)bulletDamage);
+            //add effects and damage here
+            Target target = shot.transform.GetComponent[Target]();
+            GiveDamage(target);
+        }
+        currentAmmo--;
+        yield return new WaitForEndOfFrame();
+        animator.SetBool("Shooting", false);
+    }
+}
                         </code>
                     </pre>
                 </p>
@@ -256,20 +256,20 @@
                 <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            public void CheckValueExists(string floatName, Slider slider, Text text)
-                            {
-                                float a;
-                                if((a = PlayerPrefs.GetFloat(floatName)) != 0)
-                                {
-                                    ChangeSlider(slider, a);
-                                    ChangeText(text, a);
-                                }
-                                else
-                                {
-                                    ChangeSlider(slider, 50);
-                                    ChangeText(text, 50);
-                                }
-                            }           
+public void CheckValueExists(string floatName, Slider slider, Text text)
+{
+    float a;
+    if((a = PlayerPrefs.GetFloat(floatName)) != 0)
+    {
+        ChangeSlider(slider, a);
+        ChangeText(text, a);
+    }
+    else
+    {
+        ChangeSlider(slider, 50);
+        ChangeText(text, 50);
+    }
+}           
                         </code>
                     </pre>
                 <br />
@@ -278,12 +278,12 @@
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        public void ExitScreen()
-                        {
-                            PlayerPrefs.Save();
-                            GameEvents.onSettingsClose?.Invoke();
-                            canvas.enabled = false;
-                        }     
+public void ExitScreen()
+{
+    PlayerPrefs.Save();
+    GameEvents.onSettingsClose?.Invoke();
+    canvas.enabled = false;
+}     
                     </code>
                 </pre>
                 </p>

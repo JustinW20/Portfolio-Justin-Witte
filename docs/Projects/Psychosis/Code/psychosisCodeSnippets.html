@@ -39,31 +39,31 @@
                     <br />
                 <pre class="line-numbers">
                         <code class="language-csharp">
-                            //returns true on completion of showing all text
-                            public bool Update()
-                            {
-                                timer -= Time.deltaTime;
-                                while (timer <= 0)
-                                {
-                                    //display next character
-                                    timer += timePerCharacter;
-                                    characterIndex++;
-                                    string text = newText.Substring(0, characterIndex);
-                                    if (invisibleCharacters)
-                                    {
-                                        text += "<color=#00000000>" + newText.Substring(characterIndex) + "</color>";
-                                    }
-                                    uiText.text = text;
+//returns true on completion of showing all text
+public bool Update()
+{
+    timer -= Time.deltaTime;
+    while (timer <= 0)
+    {
+        //display next character
+        timer += timePerCharacter;
+        characterIndex++;
+        string text = newText.Substring(0, characterIndex);
+        if (invisibleCharacters)
+        {
+            text += "<color=#00000000>" + newText.Substring(characterIndex) + "</color>";
+        }
+        uiText.text = text;
 
-                                    if (characterIndex >= newText.Length)
-                                    {
-                                        //now stop displaying new characters
-                                        onComplete?.Invoke();
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
+        if (characterIndex >= newText.Length)
+        {
+            //now stop displaying new characters
+            onComplete?.Invoke();
+            return true;
+        }
+    }
+    return false;
+}
                         </code>
                     </pre>
                 <br />
@@ -74,19 +74,19 @@
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                    // Update is called once per frame
-                    void Update()
-                    {
-                        for (int i = 0; i < textWriterSingleList.Count; i++)
-                        {
-                            bool isDone = textWriterSingleList[i].Update();
-                            if (isDone)
-                            {
-                                textWriterSingleList.RemoveAt(i);
-                                i--;
-                            }
-                        }
-                    }
+// Update is called once per frame
+void Update()
+{
+    for (int i = 0; i < textWriterSingleList.Count; i++)
+    {
+        bool isDone = textWriterSingleList[i].Update();
+        if (isDone)
+        {
+            textWriterSingleList.RemoveAt(i);
+            i--;
+        }
+    }
+}
                     </code>
                 </pre>
                 <br />
@@ -95,39 +95,39 @@
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        public static TextWriterSingle AddWriter(Text uiText, string newText, float timePerCharacter, 
-                         Action onComplete = null, bool invisibleCharacters = true, bool removePreviousWriter = true)
-                        {
-                            if (removePreviousWriter)
-                                instance.RemoveWriter_Local(uiText);
-                            return instance.AddWriter_Local(uiText, newText, timePerCharacter, onComplete, invisibleCharacters);
-                        }
-                        private TextWriterSingle AddWriter_Local(Text uiText, string newText, float timePerCharacter,
-                         Action onComplete, bool invisibleCharacters)
-                        {
-                            TextWriterSingle textWriterSingle = new TextWriterSingle(uiText, newText, timePerCharacter,
-                             onComplete, invisibleCharacters);
-                            textWriterSingleList.Add(textWriterSingle);
-                            return textWriterSingle;
-                        }
+public static TextWriterSingle AddWriter(Text uiText, string newText, float timePerCharacter, 
+    Action onComplete = null, bool invisibleCharacters = true, bool removePreviousWriter = true)
+{
+    if (removePreviousWriter)
+        instance.RemoveWriter_Local(uiText);
+    return instance.AddWriter_Local(uiText, newText, timePerCharacter, onComplete, invisibleCharacters);
+}
+private TextWriterSingle AddWriter_Local(Text uiText, string newText, float timePerCharacter,
+    Action onComplete, bool invisibleCharacters)
+{
+    TextWriterSingle textWriterSingle = new TextWriterSingle(uiText, newText, timePerCharacter,
+        onComplete, invisibleCharacters);
+    textWriterSingleList.Add(textWriterSingle);
+    return textWriterSingle;
+}
 
-                        public static void RemoveWriter(Text uiText)
-                        {
-                            instance.RemoveWriter_Local(uiText);
-                        }
+public static void RemoveWriter(Text uiText)
+{
+    instance.RemoveWriter_Local(uiText);
+}
 
-                        private void RemoveWriter_Local(Text uiText)
-                        {
-                            for (int i = 0; i < textWriterSingleList.Count; i++)
-                            {
-                                if (textWriterSingleList[i].GetUIText() == uiText)
-                                {
-                                    textWriterSingleList.RemoveAt(i);
-                                    i--;
-                                }
+private void RemoveWriter_Local(Text uiText)
+{
+    for (int i = 0; i < textWriterSingleList.Count; i++)
+    {
+        if (textWriterSingleList[i].GetUIText() == uiText)
+        {
+            textWriterSingleList.RemoveAt(i);
+            i--;
+        }
 
-                            }
-                        }
+    }
+}
                     </code>
                 </pre>
                 <br />
@@ -135,32 +135,32 @@
                 <br />
                 <pre class="line-numbers">
                     <code class="language-csharp">
-                        private void Awake()
-                        {
-                            text = transform.Find("Text").GetComponent<Text>();
-                            textWriterSingle = TextWriter.AddWriter(text, messageArray[0], textSpeed);
-                        }
+private void Awake()
+{
+    text = transform.Find("Text").GetComponent<Text>();
+    textWriterSingle = TextWriter.AddWriter(text, messageArray[0], textSpeed);
+}
 
-                        void Update()
-                        {
-                            if (Input.GetKeyDown(confirmKey))
-                            {
-                                if (textWriterSingle?.IsActive() != false)
-                                {
-                                    textWriterSingle.SkipText();
-                                }
-                                else if (++i >= messageArray.Length)
-                                {
-                                    Destroy(gameObject);
-                                }
-                                else
-                                {
-                                    string message = messageArray[i];
-                                    StartTalking();
-                                    textWriterSingle = TextWriter.AddWriter(text, message, textSpeed, StopTalking);
-                                }
-                            }
-                        }
+void Update()
+{
+    if (Input.GetKeyDown(confirmKey))
+    {
+        if (textWriterSingle?.IsActive() != false)
+        {
+            textWriterSingle.SkipText();
+        }
+        else if (++i >= messageArray.Length)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            string message = messageArray[i];
+            StartTalking();
+            textWriterSingle = TextWriter.AddWriter(text, message, textSpeed, StopTalking);
+        }
+    }
+}
                     </code>
                 </pre>
                 </p>
